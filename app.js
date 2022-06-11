@@ -1,33 +1,30 @@
-import {Command} from 'commander';
+#!/usr/bin/env node
+import { Command } from 'commander';
 const program = new Command();
-import { getNotes,appendNote } from './notion.js';
+import { getNotes, appendNote,deleteNote } from './notion.js';
 
 program
   .option('-l, --list')
-  .option('-c, --check')
-  .option('-d, --delete')
-  .option('-h, --help');
-   
+  .action((num) => { getNotes(); })   
+
 program
   .command('add')
   .argument('<string>', 'Add a note')
-  .action((string)=>{ appendNote(string);})
+  .action((string) => { appendNote(string); }) 
+
+program
+  .command('check')
+  .argument('<number>', 'Check a note')
+  .action((num) => { checkNote(num); }) 
+
+  program
+  .command('delete')
+  .argument('<number>', 'Delete a note')
+  .action((num) => { deleteNote(num); })   
 
 
 program.parse();
-
-
-
 const options = program.opts();
-
-if (options.list) getNotes();
-
-
-
-
-
-
-
 //appendNote("TEST TEST TEST TEST"); 
 //test();
 //getNotes();
