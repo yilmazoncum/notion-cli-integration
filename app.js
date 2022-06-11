@@ -1,54 +1,32 @@
-import { Client } from '@notionhq/client';
+import {Command} from 'commander';
+const program = new Command();
+import { getNotes,appendNote } from './notion.js';
 
-import dotenv from 'dotenv';
-dotenv.config();
+program
+  .option('-l, --list')
+  .option('-c, --check')
+  .option('-d, --delete')
+  .option('-h, --help');
+   
+program
+  .command('add')
+  .argument('<string>', 'Add a note')
+  .action((string)=>{ appendNote(string);})
 
-const notion = new Client({ auth: process.env.NOTION_API_KEY });
-const blockId = '9030fa3a4fcb403e82938d0f14922c70';
 
-async function getNotes() {
-    const response = await notion.blocks.children.list({
-        block_id: blockId,
-    });
-    var childArray = response.results;
-    //console.log(childArray);
-    childArray.forEach((child) => {
-        console.log(child.to_do.rich_text[0].plain_text);
-    });
-}
+program.parse();
 
-async function test() {
-    const response = await notion.blocks.children.list({
-        block_id: blockId,
-    });
-    var childArray = response.results;
-     console.log(childArray[1].to_do.rich_text[0].text);
-    
-}
 
-async function appendNote(targetString) {
 
-  const response = await notion.blocks.children.append({
-    block_id: blockId,
-    children: [
-      {
-        object: 'block',
-        type: 'to_do',
-        to_do:{
-            rich_text: [
-                {
-                text: { content:`${targetString}`, link: null },
-                type: 'text'
-            }],
-        checked: false,
-        color: 'default'
-        }
-      },
-    ],
-  });
+const options = program.opts();
 
-  console.log(response);
-}
+if (options.list) getNotes();
+
+
+
+
+
+
 
 //appendNote("TEST TEST TEST TEST"); 
 //test();
